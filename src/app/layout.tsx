@@ -1,18 +1,16 @@
 "use client";
 import "~/styles/globals.css";
+
 import { GeistSans } from "geist/font/sans";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
 import { TRPCReactProvider } from "~/trpc/react";
 import NavBar from "../_components/navBar";
-import Notification from "~/_components/Notifications";
-import "react-toastify/dist/ReactToastify.css";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import ThemeProvider from "./providers/themeProvider";
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  const [queryClient] = useState(() => new QueryClient());
   const pathname = usePathname();
   const isLoginPage =
     pathname === "/login" ||
@@ -23,18 +21,18 @@ export default function RootLayout({
     pathname === "/confirm-account" ||
     pathname === "/choose-account";
   return (
-    <html lang="en" className={`${GeistSans.variable}`}>
+    <html lang="en" className={`${GeistSans.variable}`} 
+    suppressHydrationWarning>
       <head>
         <title>EduAI Teacher</title>
         <meta name="description" content="Edu AI-Admin" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
       </head>
       <body className="bg-bgSecondary">
-      <QueryClientProvider client={queryClient}>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           {!isLoginPage && <NavBar />}
-          <Notification />
-        <TRPCReactProvider>{children}</TRPCReactProvider>
-        </QueryClientProvider>
+          <TRPCReactProvider>{children}</TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

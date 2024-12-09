@@ -1,5 +1,5 @@
-import axiosInstance from "../axios";
 import type { Advice, PaginatedAdvices } from "../../types";
+import axiosInstance from "../axios";
 
 export const fetchAllAdvices = async (params: {
   page: number;

@@ -1,5 +1,5 @@
-import axiosInstance from "../axios";
 import type { Advice, SignUpFormData } from "../../types";
+import axiosInstance from "../axios";
 
 export const getAllCounties = async () => {
   const response = await axiosInstance.get<{ data: unknown }>(
