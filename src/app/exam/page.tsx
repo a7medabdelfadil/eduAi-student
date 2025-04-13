@@ -9,19 +9,30 @@ import {
   useGetAllPreviousExams,
   useGetAllUpcomingExams,
 } from "~/APIs/hooks/useExam";
+import useLanguageStore from "~/APIs/store";
 
 const Exam = () => {
   const [viewMode, setViewMode] = useState<"previous" | "upcoming">("previous");
 
-  const { data: dataUpcomingExams, isLoading: isLoadingUpcomingExams } = useGetAllUpcomingExams();
-  const { data: dataPreviousExams, isLoading: isLoadingPreviousExams } = useGetAllPreviousExams();
+  const { data: dataUpcomingExams, isLoading: isLoadingUpcomingExams } =
+    useGetAllUpcomingExams();
+  const { data: dataPreviousExams, isLoading: isLoadingPreviousExams } =
+    useGetAllPreviousExams();
 
+    const language = useLanguageStore((state) => state.language);
+    const translate = (en: string, fr: string, ar: string) => {
+      return language === "fr" ? fr : language === "ar" ? ar : en;
+    };
 
   const renderExams = (data: any, type: "Previous" | "Upcoming") => {
     if (!data || data.length === 0) {
       return (
         <Text font="semiBold" size="xl">
-          No {type.toLowerCase()} exams found.
+          {translate(
+            `No ${type.toLowerCase()} exams found.`,
+            `Aucun examen ${type.toLowerCase()} trouvé.`,
+            `لا توجد امتحانات ${type === "Previous" ? "سابقة" : "قادمة"}.`
+          )}
         </Text>
       );
     }
@@ -29,32 +40,22 @@ const Exam = () => {
     return (
       <div className="relative w-full overflow-auto sm:rounded-lg">
         <Text font="bold" size="2xl" className="mb-4">
-          {type} Exams
+          {translate(
+            `${type} Exams`,
+            `Examens ${type === "Previous" ? "précédents" : "à venir"}`,
+            `الامتحانات ${type === "Previous" ? "السابقة" : "القادمة"}`
+          )}
         </Text>
-        <table className="w-full overflow-x-auto p-4 text-left text-sm text-textPrimary">
+        <table className="w-full border-separate border-spacing-y-2 overflow-x-auto p-4 text-left text-sm text-textPrimary">
           <thead className="text-xs uppercase text-textPrimary">
             <tr>
-              <th scope="col" className="whitespace-nowrap px-6 py-3">
-                Title
-              </th>
-              <th scope="col" className="whitespace-nowrap px-6 py-3">
-                Score
-              </th>
-              <th scope="col" className="whitespace-nowrap px-6 py-3">
-                Class
-              </th>
-              <th scope="col" className="whitespace-nowrap px-6 py-3">
-                Exam Type
-              </th>
-              <th scope="col" className="whitespace-nowrap px-6 py-3">
-                Exam Beginning
-              </th>
-              <th scope="col" className="whitespace-nowrap px-6 py-3">
-                Exam Ending
-              </th>
-              <th scope="col" className="whitespace-nowrap px-6 py-3">
-                Exam Date
-              </th>
+              <th className="whitespace-nowrap px-6 py-3">{translate("Title", "Titre", "العنوان")}</th>
+              <th className="whitespace-nowrap px-6 py-3">{translate("Score", "Score", "الدرجة")}</th>
+              <th className="whitespace-nowrap px-6 py-3">{translate("Class", "Classe", "الفصل")}</th>
+              <th className="whitespace-nowrap px-6 py-3">{translate("Exam Type", "Type d'examen", "نوع الامتحان")}</th>
+              <th className="whitespace-nowrap px-6 py-3">{translate("Exam Beginning", "Début de l'examen", "بداية الامتحان")}</th>
+              <th className="whitespace-nowrap px-6 py-3">{translate("Exam Ending", "Fin de l'examen", "نهاية الامتحان")}</th>
+              <th className="whitespace-nowrap px-6 py-3">{translate("Exam Date", "Date d'examen", "تاريخ الامتحان")}</th>
             </tr>
           </thead>
           <tbody className="rounded-lg">
@@ -64,25 +65,16 @@ const Exam = () => {
                 className="bg-bgSecondary font-semibold hover:bg-primary hover:text-white"
               >
                 <th
-                  scope="row"
                   className="whitespace-nowrap rounded-s-2xl px-6 py-4 font-medium text-textSecondary"
                 >
                   {exam.courseName}
                 </th>
                 <td className="whitespace-nowrap px-6 py-4">{exam.examGrade}</td>
                 <td className="whitespace-nowrap px-6 py-4">{exam.className}</td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  {exam.examTypeName}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  {exam.examBeginning}
-                </td>
-                <td className="whitespace-nowrap px-6 py-4">
-                  {exam.examEnding}
-                </td>
-                <td className="whitespace-nowrap rounded-e-2xl px-6 py-4">
-                  {exam.examDate}
-                </td>
+                <td className="whitespace-nowrap px-6 py-4">{exam.examTypeName}</td>
+                <td className="whitespace-nowrap px-6 py-4">{exam.examBeginning}</td>
+                <td className="whitespace-nowrap px-6 py-4">{exam.examEnding}</td>
+                <td className="whitespace-nowrap rounded-e-2xl px-6 py-4">{exam.examDate}</td>
               </tr>
             ))}
           </tbody>
@@ -91,11 +83,10 @@ const Exam = () => {
     );
   };
 
-  // Show loading text if any data is still loading
-  if ( isLoadingUpcomingExams || isLoadingPreviousExams) {
+  if (isLoadingUpcomingExams || isLoadingPreviousExams) {
     return (
       <Container>
-        <div className="flex w-full h-[500px] items-center justify-center">
+        <div className="flex h-[500px] w-full items-center justify-center">
           <Spinner />
         </div>
       </Container>
@@ -103,39 +94,36 @@ const Exam = () => {
   }
 
   return (
-    <Container>
-      <div className="flex w-full items-center justify-between gap-7">
-        <div className="flex w-[400px] items-center gap-10">
-          <Button
-            theme={viewMode === "previous" ? "solid" : "outline"}
-            onClick={() => setViewMode("previous")}
-          >
-            Previous Exams
-          </Button>
-          <Button
-            theme={viewMode === "upcoming" ? "solid" : "outline"}
-            onClick={() => setViewMode("upcoming")}
-          >
-            Upcoming Exams
-          </Button>
+    <div>
+      <Container>
+        <div className="flex w-full items-center justify-between gap-7">
+          <div className="flex w-1/2 md:w-[400px] items-center gap-10">
+            <Button
+              className="text-sm md:text-md"
+              theme={viewMode === "previous" ? "solid" : "outline"}
+              onClick={() => setViewMode("previous")}
+            >
+              {translate("Previous Exams", "Examens Précédents", "الامتحانات السابقة")}
+            </Button>
+            <Button
+              className="text-sm md:text-md"
+              theme={viewMode === "upcoming" ? "solid" : "outline"}
+              onClick={() => setViewMode("upcoming")}
+            >
+              {translate("Upcoming Exams", "Examens à venir", "الامتحانات القادمة")}
+            </Button>
+          </div>
         </div>
 
-      </div>
-
-      <div className="mt-10 flex h-full w-full items-center justify-center">
-        <div className="flex w-full overflow-auto rounded-md bg-bgPrimary p-4">
-          {
-            viewMode === "previous"
+        <div className="mt-10 flex h-full w-full items-center justify-center">
+          <div className="flex w-full overflow-auto rounded-md bg-bgPrimary p-4">
+            {viewMode === "previous"
               ? renderExams(dataPreviousExams?.data, "Previous")
-              : renderExams(dataUpcomingExams?.data, "Upcoming")
-
-            // <Text font="semiBold" size="xl">
-            //   Select a student to view their exams
-            // </Text>
-}
+              : renderExams(dataUpcomingExams?.data, "Upcoming")}
+          </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 };
 

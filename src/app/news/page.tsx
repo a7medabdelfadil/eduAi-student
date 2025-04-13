@@ -3,6 +3,7 @@ import Image from "next/image";
 import { FaHeart, FaPaperPlane, FaRegComment, FaRegHeart } from "react-icons/fa";
 import Box from "~/_components/Box";
 import Container from "~/_components/Container";
+import ImageComponent from "~/_components/ImageSrc";
 import Spinner from "~/_components/Spinner";
 import { Text } from "~/_components/Text";
 import { useGetAllNews, useLikePost } from "~/APIs/hooks/useNews";
@@ -35,13 +36,15 @@ const News = () => {
             News
           </Text>
           <div className="flex justify-center">
-            <div className="w-1/2">
+            <div className="mt-8 w-4/5 md:w-3/4 xl:w-1/2">
             {
               data.data.content.map((newsItem: any) => (
                 <Box key={newsItem.id} border="borderPrimary" className="mb-10">
                   <div>
                     <div className="flex items-center gap-2">
-                      <Image
+                    <ImageComponent
+        fallbackSrc="/images/noImage.png"
+        priority={true}
                         src={newsItem.publisherPicture}
                         alt="Profile Photo"
                         width={50}
@@ -64,7 +67,9 @@ const News = () => {
                     <div className="mt-4 grid grid-cols-2 gap-3">
                       {
                         newsItem.attachments.map((img: any) => (
-                          <Image
+                          <ImageComponent
+        fallbackSrc="/images/noImage.png"
+        priority={true}
                           key={img.id}
                             src={img.viewLink}
                             alt="Profile Photo"
