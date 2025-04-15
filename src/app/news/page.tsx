@@ -1,14 +1,13 @@
-"use client"
-import Image from "next/image";
-import { FaHeart, FaPaperPlane, FaRegComment, FaRegHeart } from "react-icons/fa";
+"use client";
+import { HiMiniHeart, HiOutlineHeart } from "react-icons/hi2";
 import Box from "~/_components/Box";
 import Container from "~/_components/Container";
 import ImageComponent from "~/_components/ImageSrc";
-import Spinner from "~/_components/Spinner";
 import { Text } from "~/_components/Text";
 import { useGetAllNews, useLikePost } from "~/APIs/hooks/useNews";
+import { Skeleton } from "~/components/ui/skeleton";
 const News = () => {
-  const {data, isLoading, refetch} = useGetAllNews();
+  const { data, isLoading, refetch } = useGetAllNews();
   const { mutate: likePost } = useLikePost();
 
   const handleLikeClick = (postId: number, liked: boolean) => {
@@ -21,13 +20,42 @@ const News = () => {
       },
     );
   };
-  if(isLoading){
-    return(
-      <div className="flex w-full justify-center">
-      <Spinner />
-    </div>
-    )
+  if (isLoading) {
+    return (
+      <Container>
+        <Box>
+          <Text font={"bold"} size={"2xl"}>
+            News
+          </Text>
+          <div className="flex justify-center">
+            <div className="mt-8 w-4/5 space-y-6 md:w-3/4 xl:w-2/3">
+              {[...Array(3)].map((_, i) => (
+                <Box
+                  key={i}
+                  shadow="md"
+                  border="borderPrimary"
+                  className="space-y-4 p-4"
+                >
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-[60px] w-[60px] rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-1/3" />
+                      <Skeleton className="h-3 w-1/4" />
+                    </div>
+                  </div>
+                  <Skeleton className="h-5 w-2/3" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-[300px] w-full rounded-lg" />
+                  <Skeleton className="h-4 w-1/6" />
+                </Box>
+              ))}
+            </div>
+          </div>
+        </Box>
+      </Container>
+    );
   }
+
   return (
     <>
       <Container>
@@ -36,20 +64,24 @@ const News = () => {
             News
           </Text>
           <div className="flex justify-center">
-            <div className="mt-8 w-4/5 md:w-3/4 xl:w-1/2">
-            {
-              data.data.content.map((newsItem: any) => (
-                <Box key={newsItem.id} border="borderPrimary" className="mb-10">
+            <div className="mt-8 w-4/5 md:w-3/4 xl:w-2/3">
+              {data.data.content.map((newsItem: any) => (
+                <Box
+                  key={newsItem.id}
+                  shadow="md"
+                  border="borderPrimary"
+                  className="mb-10"
+                >
                   <div>
                     <div className="flex items-center gap-2">
-                    <ImageComponent
-        fallbackSrc="/images/noImage.png"
-        priority={true}
+                      <ImageComponent
+                        fallbackSrc="/images/noImage.png"
+                        priority={true}
                         src={newsItem.publisherPicture}
                         alt="Profile Photo"
                         width={50}
                         height={50}
-                        className="w-[60px] h-[60px] rounded-full"
+                        className="h-[60px] w-[60px] rounded-full"
                       />
                       <div className="flex flex-col">
                         <Text font={"semiBold"} size={"xl"}>
@@ -58,53 +90,53 @@ const News = () => {
                         <Text color={"gray"}>1h ago</Text>
                       </div>
                     </div>
-                        <Text className="mt-4" font={"semiBold"} size={"xl"}>
-                          {newsItem.title}
-                        </Text>
                     <Text font={"medium"} size={"xl"} className="mt-4">
                       {newsItem.content}
                     </Text>
-                    <div className="mt-4 grid grid-cols-2 gap-3">
-                      {
-                        newsItem.attachments.map((img: any) => (
-                          <ImageComponent
-        fallbackSrc="/images/noImage.png"
-        priority={true}
+                    <div
+                      className={`mt-4 grid gap-3 ${
+                        newsItem.attachments.length === 1
+                          ? "grid-cols-1"
+                          : newsItem.attachments.length === 2
+                            ? "grid-cols-2"
+                            : "grid-cols-2 md:grid-cols-3"
+                      }`}
+                    >
+                      {newsItem.attachments.map((img: any) => (
+                        <ImageComponent
+                          fallbackSrc="/images/noImage.png"
+                          priority={true}
                           key={img.id}
-                            src={img.viewLink}
-                            alt="Profile Photo"
-                            width={750}
-                            height={750}
-                          />
-                        ))
-                      }
-                      
+                          src={img.viewLink}
+                          alt="Attachment"
+                          width={750}
+                          height={750}
+                          className="max-h-[300px] w-full rounded-xl object-cover md:max-h-[400px] lg:max-h-[500px]"
+                        />
+                      ))}
                     </div>
                   </div>
                   <hr className="mt-7" />
-                    <div className="flex gap-3 mt-2">
-                  <button
-                    className="flex items-center gap-1"
-                  >
-                    {newsItem?.isLiked ? (
-                      <FaHeart
-                        color="red"
-                        size={20}
-                        onClick={() => handleLikeClick(newsItem.id, false)}
-                      />
-                    ) : (
-                      <FaRegHeart
-                        size={20}
-                        onClick={() => handleLikeClick(newsItem.id, true)}
-                      />
-                    )}
+                  <div className="mt-2 flex gap-3">
+                    <button className="flex items-center gap-1">
+                      {newsItem?.isLiked ? (
+                        <HiMiniHeart
+                          color="red"
+                          size={30}
+                          onClick={() => handleLikeClick(newsItem.id, false)}
+                        />
+                      ) : (
+                        <HiOutlineHeart
+                          size={30}
+                          onClick={() => handleLikeClick(newsItem.id, true)}
+                        />
+                      )}
 
-                    <Text size={"xs"}>{newsItem?.likesCount}</Text>
-                  </button>
-                </div>
+                      <Text font={'semiBold'}>{newsItem?.likesCount}</Text>
+                    </button>
+                  </div>
                 </Box>
-              ))
-            }
+              ))}
             </div>
           </div>
         </Box>

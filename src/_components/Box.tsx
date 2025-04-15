@@ -25,7 +25,7 @@ interface BoxProps extends React.HTMLAttributes<HTMLDivElement> {
 const Box: React.FC<BoxProps> = ({ children, className = "", shadow = "sm", border = "none", ...props }) => {
   return (
     <div
-      className={`w-full rounded-xl bg-bgPrimary p-4 shadow-${shadow} ${border !== "none" ? `border ${border}` : ""} ${className}`}
+      className={`w-full rounded-xl bg-bgPrimary p-4 shadow-${shadow} ${border !== "none" ? `border ${border}/2` : ""} ${className}`}
       {...props}
     >
       {children}
