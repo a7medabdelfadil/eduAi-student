@@ -115,6 +115,7 @@ const News = () => {
                         />
                       ))}
                     </div>
+                    
                   </div>
                   <hr className="mt-7" />
                   <div className="mt-2 flex gap-3">
